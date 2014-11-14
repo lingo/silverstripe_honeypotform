@@ -8,6 +8,20 @@
  * to the user; exactly what we don't want in this case.
  */
 class HoneypotForm extends Form {
+
+	/**
+	 * The minimum amount of time (seconds) to fill in the form.
+	 * We assume that a quicker formfill than this is a bot.
+	 * @var integer
+	 */
+	public static $minimum_formfill_seconds = 10;
+
+	/**
+	 * If this is false, then timestamp fields won't be added or checked
+	 * @var boolean
+	 */
+	public static $use_timestamps = false;
+
 	/**
 	 * The hash used as a token f0r this form.
 	 * @var string
@@ -41,6 +55,15 @@ class HoneypotForm extends Form {
 		return $this->honeypot;
 	}
 
+
+	/**
+	 * Generate the name of the timestamp field
+	 * @return string
+	 */
+	protected function getTimeFieldName() {
+		return md5($this->honeypot . 'timestamp');
+	}
+
 	/**
 	 * Create a new Honeypot form, that is a form with a honeypot field; if the
 	 * honeypot field is filled in, the form submission will silently fail.
@@ -61,6 +84,12 @@ class HoneypotForm extends Form {
 		$field = new TextField($this->honeypot, 'Please do not fill in this field');
 		$field->addExtraClass(self::$css_class);
 		$fields->push($field);
+
+		if (self::$use_timestamps) {
+			$timeField = new HiddenField($this->getTimeFieldName());
+			$timeField->setValue(time());
+			$fields->push($timeField);
+		}
 		parent::__construct($controller, $name, $fields, $actions, $validator);
 	}
 
@@ -70,8 +99,19 @@ class HoneypotForm extends Form {
 	 * @return boolean       true if field was left empty as desired.
 	 */
 	public function validateHoneypot($data) {
-		$fieldName = $this->getToken();
-		if (isset($data[$fieldName]) && empty($data[$fieldName])) {
+		$now            = time();
+		$fieldName      = $this->getToken();
+		$timestampField = $this->getTimeFieldName();
+		$then           = $data[$timestampField];
+		$notTooFast     = (($now - $then) > self::$minimum_formfill_seconds);
+
+		if (self::$use_timestamps) {
+			$notTooFast = true;
+		}
+
+		if (isset($data[$fieldName])
+			&& empty($data[$fieldName])
+			&& $notTooFast) {
 			return true;
 		}
 		// If we get here, then the invisible Honeypot field has been filled in, lets assume by a bot.
