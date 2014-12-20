@@ -76,7 +76,7 @@ class HoneypotForm extends Form {
 	 * @param FieldSet $actions    	@see Form::__construct
 	 * @param Validator $validator  	@see Form::__construct
 	 */
-	public function __construct($controller, $name, FieldSet $fields=null, FieldSet $actions=null, $validator=null) {
+	public function __construct($controller, $name, FieldList $fields=null, FieldList $actions=null, $validator=null) {
 		$this->Name = $name;
 		if (!$this->getToken()) {
 			$this->setToken();
