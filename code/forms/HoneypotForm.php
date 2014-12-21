@@ -44,6 +44,14 @@ class HoneypotForm extends Form {
 		return $this->honeypot;
 	}
 
+	public function getHoneypotFieldName() {
+		$this->getToken();
+		if (!$this->honeypot) {
+			$this->setToken();
+		}
+		return $this->getToken();
+	}
+
 	/**
 	 * Set the token (more correctly generate).
 	 * @uses Session
