@@ -56,9 +56,12 @@ class HoneypotForm extends Form {
 	 * Set the token (more correctly generate).
 	 * @uses Session
 	 */
-	protected function setToken() {
-		$generator      = new RandomGenerator();
-		$this->honeypot = 'hp_' . $generator->randomToken('sha1');
+	public function setToken($token=null) {
+		if (!$token) {
+			$generator = new RandomGenerator();
+			$token     = 'hp_' . $generator->randomToken('sha1');
+		}
+		$this->honeypot = $token;
 		Session::set('HoneypotForm.' . $this->Name . '.Honeypot', $this->honeypot);
 		return $this->honeypot;
 	}
