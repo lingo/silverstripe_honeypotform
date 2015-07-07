@@ -23,10 +23,18 @@ class HoneypotForm extends Form {
 	public static $use_timestamps = false;
 
 	/**
-	 * The hash used as a token f0r this form.
+	 * The hash used as a token for this form.
 	 * @var string
 	 */
 	protected $honeypot         = '';
+
+	/**
+	 * Use this to prevent generation of a random field name
+	 * each time.
+	 * @see set_force_token
+	 * @var boolean
+	 */
+	protected static $force_token = false;
 
 	/**
 	 * Randomized value used as a css classname to
@@ -45,8 +53,7 @@ class HoneypotForm extends Form {
 	}
 
 	public function getHoneypotFieldName() {
-		$this->getToken();
-		if (!$this->honeypot) {
+		if (!$this->getToken()) {
 			$this->setToken();
 		}
 		return $this->getToken();
@@ -56,8 +63,9 @@ class HoneypotForm extends Form {
 	 * Set the token (more correctly generate).
 	 * @uses Session
 	 */
-	public function setToken($token=null) {
-		if (!$token) {
+	protected function setToken() {
+		$token = self::$force_token;
+		if ($token === false) {
 			$generator = new RandomGenerator();
 			$token     = 'hp_' . $generator->randomToken('sha1');
 		}
@@ -153,4 +161,16 @@ class HoneypotForm extends Form {
 CSS
 		);
 	}
+
+
+	public static function set_force_token($token) {
+		$oldToken = self::$force_token;
+		if (!$token) {
+			self::$force_token = false;
+		} else {
+			self::$force_token = $token;
+		}
+		return $oldToken;
+	}
+
 }
