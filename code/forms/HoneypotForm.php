@@ -110,13 +110,13 @@ class HoneypotForm extends Form {
 	 * @return boolean       true if field was left empty as desired.
 	 */
 	public function validateHoneypot($data) {
-		$now            = time();
 		$fieldName      = $this->getToken();
 		$timestampField = $this->getTimeFieldName();
-		$then           = $data[$timestampField];
+		$now            = time();
+		$then           = isset($data[$timestampField]) ? $data[$timestampField] : $now;
 		$notTooFast     = (($now - $then) > self::$minimum_formfill_seconds);
 
-		if (self::$use_timestamps) {
+		if (!self::$use_timestamps) {
 			$notTooFast = true;
 		}
 
