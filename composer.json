@@ -1,8 +1,11 @@
 {
-    "name": "lingo/silverstripe_honeypotform",
+    "name":        "lingo/silverstripe_honeypotform",
     "description": "A Form which provides a Honeypot field to trick bots, and reduce spam.",
-    "license": "MIT",
-    "authors": [
+    "type":        "silverstripe-module",
+    "keywords":    ["silverstripe", "honeypot", "form", "spam prevention"],
+    "homepage":    "https://github.com/lingo/silverstripe_honeypotform",
+    "license":     "MIT",
+    "authors":     [
         {
             "name": "Luke Hudson",
             "email": "lucas@speak.geek.nz"
